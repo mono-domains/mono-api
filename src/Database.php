@@ -22,6 +22,6 @@ class Database {
   }
 
   function closeConnection() {
-    $this->connection = null
+    $this->connection = null;
   }
 }

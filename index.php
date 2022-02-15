@@ -1,6 +1,8 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
+
 require __DIR__ . '/src/Database.php';
+require __DIR__ . '/src/Extensions.php';
 
 // Import info from .env
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -14,9 +16,13 @@ $router->get('/extension/(\w+)', function($extension) {
   $databaseHandler = new Database();
   $connection = $databaseHandler->getConnection();
 
-  var_dump($extension);
+  $extensionsHandler = new Extensions($connection);
+
+  $extensionInfo = $extensionsHandler->getExtensionInfo($extension);
 
   $databaseHandler->closeConnection();
+
+  die(json_encode($extensionInfo));
 });
 
 $router->run();
