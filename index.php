@@ -12,7 +12,16 @@ $dotenv->load();
 $router = new \Bramus\Router\Router();
 
 // Extension query
-$router->get('/extension/(\w+)', function($extension) {
+$router->get('/extension/([\w-]+)', function($extension) {
+  $extension = strtolower($extension);
+
+  if (!ctype_alpha($extension) && substr($extension, 0, 4) !== 'xn--') {
+    die(json_encode([
+      'success' => false,
+      'error' => 'Invalid extension'
+    ]));
+  }
+
   $databaseHandler = new Database();
   $connection = $databaseHandler->getConnection();
 
@@ -25,17 +34,10 @@ $router->get('/extension/(\w+)', function($extension) {
   die(json_encode($extensionInfo));
 });
 
+// Domain hack search
+$router->get('/search/([\w-]+)', function($domain) {
+  die('hack search');
+});
+
 $router->run();
-
-// Test DB Call
-// $databaseHandler = new Database();
-// $connection = $databaseHandler->getConnection();
-
-// $stmt = $connection->prepare('SELECT name FROM registrars WHERE id = :id');
-// $stmt->execute([':id' => 1]);
-// $output = $stmt->fetchAll();
-
-// var_dump($output);
-
-// echo "DB name is {$_ENV['DB_NAME']}";
 ?>
