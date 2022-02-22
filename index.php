@@ -39,5 +39,12 @@ $router->get('/search/([\w-]+)', function($domain) {
   die('hack search');
 });
 
+//Domain availability search
+$router->get('/availability/([\w\-.]+)', function($domain) {
+  $whois = Iodev\Whois\Factory::get()->createWhois();
+
+  var_dump($whois->isDomainAvailable('josh.ee'));
+});
+
 $router->run();
 ?>
