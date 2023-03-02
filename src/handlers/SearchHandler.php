@@ -121,6 +121,12 @@ class SearchHandler {
       if ($extensionPosition !== false && $extensionPosition > 0) {
         $hackedDomain = substr($domain, 0, $extensionPosition);
 
+        // If the resulting domain is invalid, we shouldn't add it to the results
+        if (!$domainHelper->isValidDomain($hackedDomain)) {
+          continue;
+        }
+
+        // Otherwise, add it in
         $results[] = [
           'extension' => $extension,
           'domain' => $hackedDomain,

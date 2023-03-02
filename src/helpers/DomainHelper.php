@@ -38,4 +38,15 @@ class DomainHelper {
       'subdomains' => $subdomains
     ];
   }
+
+  function isValidDomain($domain) {
+    // When calculating domain hacks we have to know whether the domain is valid or not
+
+    // For now, we can do that by just checking that the first and last characters are ctype_alnum
+    if (ctype_alnum(substr($domain, 0, 1)) && ctype_alnum(substr($domain, -1))) {
+      return true;
+    }
+
+    return false;
+  }
 }
