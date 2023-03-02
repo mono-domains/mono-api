@@ -1,5 +1,5 @@
 <?php
-class Extensions {
+class ExtensionsHandler {
   static $db = '';
 
   function __construct($connection) {
@@ -7,7 +7,7 @@ class Extensions {
   }
 
   function getExtensionInfo($extension) {
-    $sql = "SELECT
+    $sql = 'SELECT
               registrars.name AS registrar_name,
               pricing.register_price,
               pricing.renewal_price,
@@ -19,22 +19,22 @@ class Extensions {
             INNER JOIN registrars
             ON pricing.registrar_id = registrars.id
             WHERE
-              extensions.extension = :extension";
+              extensions.extension = :extension';
 
     $stmt = $this->db->prepare($sql);
-    $stmt->execute([':extension' => ".{$extension}"]);
+    $stmt->execute([':extension' => $extension]);
     $extensionInfo = $stmt->fetchAll();
 
     if (empty($extensionInfo)) {
       return [
         'success' => false,
-        'error'   => 'Extension not found in DB'
+        'error'   => 'Extension not found'
       ];
     }
 
     $outputArray = [
       'success'     => true,
-      'extension'   => ".{$extension}",
+      'extension'   => $extension,
       'registrars'  => []
     ];
 
@@ -48,5 +48,22 @@ class Extensions {
     }
 
     return $outputArray;
+  }
+
+  function getExtensionsFromSuffix($suffix) {
+    $sql = 'SELECT extension
+            FROM extensions
+            WHERE SUBSTRING(extension, -2, 2) = :suffix';
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+      ':suffix' => $suffix
+    ]);
+    $extensions = $stmt->fetchAll();
+
+    // Clean up the array, since we're only fetching one thing
+    return array_map(function($extension) {
+      return $extension['extension'];
+    }, $extensions);
   }
 }
