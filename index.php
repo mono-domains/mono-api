@@ -58,8 +58,6 @@ $router->get('/availability/([\w\-.]+)', function($domain) {
  *  Domain hack search
  */
 $router->get('/search/([\w\-.]+)', function($search) {
-  $search = strtolower($search);
-
   $databaseHandler = new DatabaseConnection();
   $connection = $databaseHandler->getConnection();
 

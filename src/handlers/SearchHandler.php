@@ -7,7 +7,7 @@ class SearchHandler {
   }
 
   function getSearchResults($search) {
-    // var_dump($search);
+    $search = $this->getSanitizedSearchString($search);
 
     // Init results array
     $results = [];
@@ -81,6 +81,13 @@ class SearchHandler {
     $results = $this->combineDomainHackResultArrays($results, $genericExtensionResults);
 
     return $results;
+  }
+
+  function getSanitizedSearchString($string) {
+    $string = strtolower($string);
+    $string = trim($string, ".");
+
+    return $string;
   }
 
   function getPotentialExtensionsForString($string) {
