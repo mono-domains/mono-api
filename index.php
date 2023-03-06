@@ -26,7 +26,7 @@ header('Content-Type: application/json');
 /*
  *  Extensions Query
  */
-$router->get('/extension/([\w\-.]+)', function($extension) {
+$router->get('/extension/([a-zA-Z0-9\-.]+)', function($extension) {
   $extension = strtolower($extension);
 
   $databaseHandler = new DatabaseConnection();
@@ -45,7 +45,7 @@ $router->get('/extension/([\w\-.]+)', function($extension) {
 /*
  *  Domain availability search
  */
-$router->get('/availability/([\w\-.]+)', function($domain) {
+$router->get('/availability/([a-zA-Z0-9\-.]+)', function($domain) {
   $domainHandler = new DomainHandler();
 
   $whoisInfo = $domainHandler->getWhoisForDomain($domain);
@@ -57,7 +57,7 @@ $router->get('/availability/([\w\-.]+)', function($domain) {
 /*
  *  Domain hack search
  */
-$router->get('/search/([\w\-.]+)', function($search) {
+$router->get('/search/([a-zA-Z0-9\-.]+)', function($search) {
   $databaseHandler = new DatabaseConnection();
   $connection = $databaseHandler->getConnection();
 

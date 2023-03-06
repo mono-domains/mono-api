@@ -3,12 +3,20 @@ class DomainHandler {
   function getWhoisForDomain($domain) {
     $whois = Iodev\Whois\Factory::get()->createWhois();
 
-    $isDomainAvailable = $whois->isDomainAvailable($domain);
-    $whoisInfo = $whois->lookupDomain($domain);
+    try {
+      $isDomainAvailable = $whois->isDomainAvailable($domain);
+      $whoisInfo = $whois->lookupDomain($domain);
 
-    return [
-      'isDomainAvailable' => $isDomainAvailable,
-      'whoisInfo' => $whoisInfo->text
-    ];
+      return [
+        'isDomainAvailable' => $isDomainAvailable,
+        'whoisInfo' => $whoisInfo->text
+      ];
+    } catch (Exception $e) {
+      return [
+        'isDomainAvailable' => null,
+        'whoisInfo' => null,
+        'error' => $e->getMessage()
+      ];
+    }
   }
 }
