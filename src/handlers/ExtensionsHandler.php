@@ -40,7 +40,7 @@ class ExtensionsHandler {
 
     foreach ($extensionInfo as $registrar) {
       $outputArray['registrars'][] = [
-        'registrarName' => $registrar['registrar_name'],
+        'name' => $registrar['registrar_name'],
         'registerPrice' => $registrar['register_price'],
         'renewalPrice'  => $registrar['renewal_price'],
         'registerUrl'   => $registrar['register_url']
