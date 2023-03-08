@@ -34,9 +34,12 @@ class SearchHandler {
       // So let's figure out which bits are which
       $domainLevels = $domainHelper->getDomainLevelsForString($searchDomain);
 
+      // Get the extension info
+      $extensionInfo = $this->getExtensionInfo($longestExtension);
+
       // Cool, so now we've got all that info we can add it to the results
       $results[] = [
-        'extension' => $longestExtension,
+        'extension' => $extensionInfo,
         'domain' => $domainLevels['domain'],
         'subdomains' => $domainLevels['subdomains']
       ];
@@ -71,8 +74,10 @@ class SearchHandler {
     $genericExtensions = ['.com', '.net', '.org', '.co', '.io'];
 
     $genericExtensionResults = array_map(function ($extension) use ($domainLevels) {
+      $extensionInfo = $this->getExtensionInfo($extension);
+
       return [
-        'extension' => $extension,
+        'extension' => $extensionInfo,
         'domain' => $domainLevels['domain'],
         'subdomains' => $domainLevels['subdomains']
       ];
@@ -99,6 +104,19 @@ class SearchHandler {
 
     // And find extensions ending with those characters
     return $extensionHandler->getExtensionsFromSuffix($stringSuffix);
+  }
+
+  function getExtensionInfo($extension) {
+    // Init the ExtensionHandler
+    $extensionsHandler = new ExtensionsHandler($this->db);
+
+    // Get the extension info
+    $extensionInfo = $extensionsHandler->getExtensionInfo($extension);
+
+    // Since this is originally used for an API call, we need to update some of the information
+    unset($extensionInfo['success']);
+
+    return $extensionInfo;
   }
 
   function getDomainHacksForString($string) {
@@ -133,9 +151,11 @@ class SearchHandler {
           continue;
         }
 
+        $extensionInfo = $this->getExtensionInfo($extension);
+
         // Otherwise, add it in
         $results[] = [
-          'extension' => $extension,
+          'extension' => $extensionInfo,
           'domain' => $hackedDomain,
           'subdomains' => $domainLevels['subdomains']
         ];
