@@ -68,7 +68,7 @@ $router->get('/search/([a-zA-Z0-9\-.]+)', function($search) {
   $databaseHandler->closeConnection();
 
   die(json_encode([
-    'query' => $search,
+    'success' => true,
     'results' => $searchResults
   ]));
 });

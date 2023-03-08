@@ -8,13 +8,13 @@ class DomainHandler {
       $whoisInfo = $whois->lookupDomain($domain);
 
       return [
+        'success' => true,
         'isDomainAvailable' => $isDomainAvailable,
         'whoisInfo' => $whoisInfo->text
       ];
     } catch (Exception $e) {
       return [
-        'isDomainAvailable' => null,
-        'whoisInfo' => null,
+        'success' => false,
         'error' => $e->getMessage()
       ];
     }
