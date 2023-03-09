@@ -13,6 +13,10 @@ services:
       MYSQL_PASSWORD: mono
     networks:
       - mono
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
 
   adminer:
     image: adminer
