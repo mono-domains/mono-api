@@ -8,16 +8,17 @@ class ExtensionsHandler {
 
   function getExtensionInfo($extension) {
     $sql = 'SELECT
-              registrars.name AS registrar_name,
-              pricing.register_price,
-              pricing.renewal_price,
-              pricing.url AS register_url
+              registrars.name AS registrarName,
+              pricing.registerPrice,
+              pricing.renewalPrice,
+              pricing.url AS registerUrl,
+              pricing.isOnSale
             FROM extension_pricing
             AS pricing
             INNER JOIN extensions
-            ON pricing.extension_id = extensions.id
+            ON pricing.extensionId = extensions.id
             INNER JOIN registrars
-            ON pricing.registrar_id = registrars.id
+            ON pricing.registrarId = registrars.id
             WHERE
               extensions.extension = :extension';
 
@@ -40,10 +41,11 @@ class ExtensionsHandler {
 
     foreach ($extensionInfo as $registrar) {
       $outputArray['registrars'][] = [
-        'name' => $registrar['registrar_name'],
-        'registerPrice' => $registrar['register_price'],
-        'renewalPrice'  => $registrar['renewal_price'],
-        'registerUrl'   => $registrar['register_url']
+        'name' => $registrar['registrarName'],
+        'registerPrice' => $registrar['registerPrice'],
+        'renewalPrice'  => $registrar['renewalPrice'],
+        'registerUrl'   => $registrar['registerUrl'],
+        'isOnSale'      => (boolean)$registrar['isOnSale']
       ];
     }
 
