@@ -25,7 +25,7 @@ class SearchHandler {
     // So we've found one, let's add it to the results
     if ($longestExtension !== false) {
       // Let's start by getting the position that the extension starts
-      $extensionPosition = strpos($search, $longestExtension);
+      $extensionPosition = strrpos($search, $longestExtension);
 
       // Which will then let us get the bits before
       $searchDomain = substr($search, 0, $extensionPosition);
@@ -141,7 +141,7 @@ class SearchHandler {
     foreach ($potentialExtensions as $extension) {
       $flattenedExtension = str_replace('.', '', $extension);
 
-      $extensionPosition = strpos($domain, $flattenedExtension);
+      $extensionPosition = strrpos($domain, $flattenedExtension);
 
       if ($extensionPosition !== false && $extensionPosition > 0) {
         $hackedDomain = substr($domain, 0, $extensionPosition);

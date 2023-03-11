@@ -20,7 +20,9 @@ class ExtensionsHandler {
             INNER JOIN registrars
             ON pricing.registrarId = registrars.id
             WHERE
-              extensions.extension = :extension';
+              extensions.extension = :extension
+            ORDER BY
+              pricing.registerPrice ASC';
 
     $stmt = $this->db->prepare($sql);
     $stmt->execute([':extension' => $extension]);
