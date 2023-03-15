@@ -120,6 +120,12 @@ class SearchHandler {
   }
 
   function getDomainHacksForString($string) {
+    // We don't want to search for domain hacks if the user has passed in a punycoded search
+    // So let's just check for that and return nothing if so
+    if (substr($string, 0, 4) === 'xn--') {
+      return [];
+    }
+
     // Init results array
     $results = [];
 
