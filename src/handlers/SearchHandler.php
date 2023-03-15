@@ -89,8 +89,12 @@ class SearchHandler {
   }
 
   function getSanitizedSearchString($string) {
+    // Turn to lowercase
     $string = strtolower($string);
-    $string = trim($string, ".");
+    // Remove full stops and hyphens from either side
+    $string = trim($string, ".-");
+    // Remove multiple repeating full stops
+    $string = preg_replace('/[.]{2,}/', '.', $string);
 
     return $string;
   }
