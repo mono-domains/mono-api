@@ -6,6 +6,7 @@ require __DIR__ . '/src/connections/DatabaseConnection.php';
 require __DIR__ . '/src/handlers/ExtensionsHandler.php';
 require __DIR__ . '/src/handlers/DomainHandler.php';
 require __DIR__ . '/src/handlers/SearchHandler.php';
+require __DIR__ . '/src/handlers/RegistrarsHandler.php';
 
 require __DIR__ . '/src/helpers/DomainHelper.php';
 
@@ -70,6 +71,49 @@ $router->get('/search/([a-zA-Z0-9\-.]+)', function($search) {
   die(json_encode([
     'success' => true,
     'results' => $searchResults
+  ]));
+});
+
+
+/*
+ *  Homepage stats
+ */
+$router->get('/homepageStats', function() {
+  $databaseHandler = new DatabaseConnection();
+  $connection = $databaseHandler->getConnection();
+
+  // First off we want to get the pricing results for a .com domain
+  $extensionsHandler = new ExtensionsHandler($connection);
+
+  $comInfo = $extensionsHandler->getExtensionInfo('.com');
+  $comRegistrars = array_slice($comInfo['registrars'], 0, 3);
+
+  // Next off we want to get an example domain hack search, e.g. 'cheapcars'
+  $searchHandler = new SearchHandler($connection);
+
+  $searchResults = $searchHandler->getSearchResults('cheapcars');
+  $domainHacks = array_slice($searchResults, 0, 3);
+
+  // Now we wanna get the first and last extension in the db
+  $firstAndLastTLD = $extensionsHandler->getFirstAndLastTLD();
+
+  // After that we can get the total number of extensions and registrars
+  $extensionsCount = $extensionsHandler->getExtensionCount();
+
+  $registrarsHandler = new RegistrarsHandler($connection);
+
+  $registrarsCount = $registrarsHandler->getRegistrarsCount();
+
+  // Now we've got all that, close the connection and spit it out
+  $databaseHandler->closeConnection();
+
+  die(json_encode([
+    'success' => true,
+    'comRegistrars' => $comRegistrars,
+    'domainHacks' => $domainHacks,
+    'firstAndLastTLD' => $firstAndLastTLD,
+    'extensionsCount' => $extensionsCount,
+    'registrarsCount' => $registrarsCount
   ]));
 });
 

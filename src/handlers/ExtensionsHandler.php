@@ -70,4 +70,40 @@ class ExtensionsHandler {
       return $extension['extension'];
     }, $extensions);
   }
+
+  function getFirstAndLastTLD() {
+    // I want to fetch the first and last TLD in the extensions table
+    // This is used for the homepage, and doesn't include .xx.xx domains
+
+    $sql = '(SELECT extension
+            FROM extensions
+            WHERE SUBSTRING_INDEX(extension, ".", 2) = extension
+            ORDER BY extension ASC
+            LIMIT 1)
+            UNION ALL
+            (SELECT extension
+            FROM extensions
+            WHERE SUBSTRING_INDEX(extension, ".", 2) = extension
+            ORDER BY extension DESC
+            LIMIT 1)';
+    
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+    $extensions = $stmt->fetchAll();
+
+    return array_map(function($extension) {
+      return $extension['extension'];
+    }, $extensions);
+  }
+
+  function getExtensionCount() {
+    $sql = 'SELECT COUNT(extension) as extensionCount
+            FROM extensions';
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+    $extensionCount = $stmt->fetchAll();
+
+    return $extensionCount[0]['extensionCount'];
+  }
 }
