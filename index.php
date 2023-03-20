@@ -104,6 +104,9 @@ $router->get('/homepageStats', function() {
 
   $registrarsCount = $registrarsHandler->getRegistrarsCount();
 
+  // Then we want to get the cheapest extensions currently available
+  $cheapestExtensions = $extensionsHandler->getCheapestExtensions();
+
   // Now we've got all that, close the connection and spit it out
   $databaseHandler->closeConnection();
 
@@ -113,7 +116,8 @@ $router->get('/homepageStats', function() {
     'domainHacks' => $domainHacks,
     'firstAndLastTLD' => $firstAndLastTLD,
     'extensionsCount' => $extensionsCount,
-    'registrarsCount' => $registrarsCount
+    'registrarsCount' => $registrarsCount,
+    'cheapestExtensions' => $cheapestExtensions
   ]));
 });
 

@@ -43,7 +43,7 @@ class ExtensionsHandler {
 
     foreach ($extensionInfo as $registrar) {
       $outputArray['registrars'][] = [
-        'name' => $registrar['registrarName'],
+        'name'          => $registrar['registrarName'],
         'registerPrice' => $registrar['registerPrice'],
         'renewalPrice'  => $registrar['renewalPrice'],
         'registerUrl'   => $registrar['registerUrl'],
@@ -105,5 +105,52 @@ class ExtensionsHandler {
     $extensionCount = $stmt->fetchAll();
 
     return $extensionCount[0]['extensionCount'];
+  }
+
+  function getAllExtensionPricing() {
+    $sql = 'SELECT
+              registrars.name AS registrarName,
+              extensions.extension AS extension,
+              pricing.registerPrice,
+              pricing.renewalPrice,
+              pricing.url AS registerUrl,
+              pricing.isOnSale
+            FROM extension_pricing
+            AS pricing
+            INNER JOIN extensions
+            ON pricing.extensionId = extensions.id
+            INNER JOIN registrars
+            ON pricing.registrarId = registrars.id
+            ORDER BY
+              pricing.registerPrice ASC';
+    
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+    $dbExtensions = $stmt->fetchAll();
+
+    $extensions = [];
+
+    foreach ($dbExtensions as $extension) {
+      if (isset($extensions[$extension['extension']])) {
+        continue;
+      }
+
+      $extensions[$extension['extension']] = [
+        'registrarName' => $extension['registrarName'],
+        'name'          => $extension['extension'],
+        'registerPrice' => $extension['registerPrice'],
+        'renewalPrice'  => $extension['renewalPrice'],
+        'registerUrl'   => $extension['registerUrl'],
+        'isOnSale'      => (boolean)$extension['isOnSale']
+      ];
+    }
+
+    return array_values($extensions);
+  }
+
+  function getCheapestExtensions() {
+    $allExtensions = $this->getAllExtensionPricing();
+
+    return array_slice($allExtensions, 0, 7);
   }
 }
