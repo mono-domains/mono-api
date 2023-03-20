@@ -23,9 +23,27 @@ header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
 header('Content-Type: application/json');
 
+/*
+ *  All extensions query
+ */
+$router->get('/extension/all', function() {
+  $databaseHandler = new DatabaseConnection();
+  $connection = $databaseHandler->getConnection();
+
+  $extensionsHandler = new ExtensionsHandler($connection);
+
+  $extensionPricing = $extensionsHandler->getAllExtensionPricing();
+
+  $databaseHandler->closeConnection();
+
+  die(json_encode([
+    'success' => true,
+    'results' => $extensionPricing
+  ]));
+});
 
 /*
- *  Extensions Query
+ *  Extensions query
  */
 $router->get('/extension/([a-zA-Z0-9\-.]+)', function($extension) {
   $extension = strtolower($extension);

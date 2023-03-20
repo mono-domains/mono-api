@@ -97,8 +97,8 @@ class ExtensionsHandler {
   }
 
   function getExtensionCount() {
-    $sql = 'SELECT COUNT(extension) as extensionCount
-            FROM extensions';
+    $sql = 'SELECT COUNT(DISTINCT extensionId) as extensionCount
+            FROM extension_pricing';
 
     $stmt = $this->db->prepare($sql);
     $stmt->execute();
@@ -109,18 +109,14 @@ class ExtensionsHandler {
 
   function getAllExtensionPricing() {
     $sql = 'SELECT
-              registrars.name AS registrarName,
               extensions.extension AS extension,
               pricing.registerPrice,
               pricing.renewalPrice,
-              pricing.url AS registerUrl,
               pricing.isOnSale
             FROM extension_pricing
             AS pricing
             INNER JOIN extensions
             ON pricing.extensionId = extensions.id
-            INNER JOIN registrars
-            ON pricing.registrarId = registrars.id
             ORDER BY
               pricing.registerPrice ASC';
     
@@ -136,11 +132,9 @@ class ExtensionsHandler {
       }
 
       $extensions[$extension['extension']] = [
-        'registrarName' => $extension['registrarName'],
         'name'          => $extension['extension'],
         'registerPrice' => $extension['registerPrice'],
         'renewalPrice'  => $extension['renewalPrice'],
-        'registerUrl'   => $extension['registerUrl'],
         'isOnSale'      => (boolean)$extension['isOnSale']
       ];
     }
