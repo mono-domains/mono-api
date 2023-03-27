@@ -153,7 +153,9 @@ class SearchHandler {
 
       $extensionPosition = strrpos($domain, $flattenedExtension);
 
-      if ($extensionPosition !== false && $extensionPosition > 0) {
+      if ($extensionPosition !== false // If the extension is in the domain,
+      && $extensionPosition > 0 // Isn't right at the start
+      && $extensionPosition + strlen($flattenedExtension) === strlen($domain)) { // And is at the end
         $hackedDomain = substr($domain, 0, $extensionPosition);
 
         // If the resulting domain is invalid, we shouldn't add it to the results
@@ -162,6 +164,11 @@ class SearchHandler {
         }
 
         $extensionInfo = $this->getExtensionInfo($extension);
+
+        // If we can't find the extension info, skip it
+        if ($extensionInfo['error']) {
+          continue;
+        }
 
         // Otherwise, add it in
         $results[] = [
