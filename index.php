@@ -20,8 +20,21 @@ $router = new \Bramus\Router\Router();
 // Set headers
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token');
+header('Access-Control-Allow-Headers: Origin, Content-Type');
 header('Content-Type: application/json');
+
+/*
+ * CORS Options request
+ */
+$router->options('.*', function() {
+  $whitelistedOrigins = ['http://localhost:3000', 'https://mono.domains'];
+
+  if (!in_array($_SERVER['HTTP_ORIGIN'], $whitelistedOrigins)) {
+    http_response_code(403);
+  }
+
+  http_response_code(200);
+});
 
 /*
  *  All extensions query
