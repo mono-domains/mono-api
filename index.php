@@ -17,7 +17,21 @@ $dotenv->load();
 // Set up router
 $router = new \Bramus\Router\Router();
 
+// Get CORS request origin
+$origin = $_SERVER['HTTP_ORIGIN'];
+
+// Set the whitelisted origins
+$whitelistedOrigins = [
+  'local' => 'http://localhost:3000',
+  'live' => 'https://mono.domains'
+];
+
 // Set headers
+if ($origin === $whitelistedOrigins['local']) {
+  header('Access-Control-Allow-Origin: ' . $whitelistedOrigins['local']);
+} else {
+  header('Access-Control-Allow-Origin: ' . $whitelistedOrigins['live']);
+}
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type');
 header('Content-Type: application/json');
@@ -26,13 +40,12 @@ header('Content-Type: application/json');
  * CORS Options request
  */
 $router->options('.*', function() {
-  $whitelistedOrigins = ['http://localhost:3000', 'https://mono.domains'];
-
-  if (!in_array($_SERVER['HTTP_ORIGIN'], $whitelistedOrigins)) {
+  if (!in_array($origin, $whitelistedOrigins, true)) {
     http_response_code(403);
+
+    return;
   }
 
-  header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
   http_response_code(200);
 });
 
