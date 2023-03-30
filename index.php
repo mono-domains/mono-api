@@ -18,7 +18,6 @@ $dotenv->load();
 $router = new \Bramus\Router\Router();
 
 // Set headers
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type');
 header('Content-Type: application/json');
@@ -33,6 +32,7 @@ $router->options('.*', function() {
     http_response_code(403);
   }
 
+  header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
   http_response_code(200);
 });
 
