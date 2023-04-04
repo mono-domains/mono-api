@@ -49,6 +49,31 @@ $router->options('.*', function() {
   http_response_code(200);
 });
 
+
+/*
+ * Status query
+ */
+$router->get('/status', function() {
+  $databaseHandler = new DatabaseConnection();
+  $connection = $databaseHandler->getConnection();
+
+  $extensionsHandler = new ExtensionsHandler($connection);
+  $registrarsHandler = new RegistrarsHandler($connection);
+
+  $extensionsCount = $extensionsHandler->getExtensionCount();
+  $registrarsCount = $registrarsHandler->getRegistrarsCount();
+  $registrarExtensionInfo = $registrarsHandler->getRegistrarExtensionInfo();
+
+  $databaseHandler->closeConnection();
+
+  die(json_encode([
+    'scrapedRegistrars' => count($registrarExtensionInfo) . '/' . $registrarsCount,
+    'extensionsCount' => $extensionsCount,
+    'registrarInfo' => $registrarExtensionInfo
+  ]));
+});
+
+
 /*
  *  All extensions query
  */
@@ -146,7 +171,7 @@ $router->get('/homepageStats', function() {
 
   $registrarsHandler = new RegistrarsHandler($connection);
 
-  $registrarsCount = $registrarsHandler->getRegistrarsCount();
+  $registrarsCount = $registrarsHandler->getActiveRegistrarsCount();
 
   // Then we want to get the cheapest extensions currently available
   $cheapestExtensions = $extensionsHandler->getCheapestExtensions();
