@@ -109,14 +109,18 @@ class ExtensionsHandler {
 
   function getAllExtensionPricing() {
     $sql = 'SELECT
-              extensions.extension AS extension,
+              extensions.extension AS extensionName,
+              registrars.name AS registrarName,
               pricing.registerPrice,
               pricing.renewalPrice,
+              pricing.url AS registerUrl,
               pricing.isOnSale
             FROM extension_pricing
             AS pricing
             INNER JOIN extensions
             ON pricing.extensionId = extensions.id
+            INNER JOIN registrars
+            ON pricing.registrarId = registrars.id
             ORDER BY
               pricing.registerPrice ASC';
     
@@ -124,27 +128,78 @@ class ExtensionsHandler {
     $stmt->execute();
     $dbExtensions = $stmt->fetchAll();
 
-    $extensions = [];
+    // Set the # category first so it's at the top of the list
+    $extensions = ['#' => []];
 
     foreach ($dbExtensions as $extension) {
-      if (isset($extensions[$extension['extension']])) {
-        continue;
+      // First let's figure out which category this extension is in
+      $category = substr($extension['extensionName'], 1, 1);
+
+      // If it's a number domain, or an IDN, add it to the # category
+      if (!ctype_alpha($category) || substr($extension['extensionName'], 0, 5) === '.xn--') {
+        $category = '#';
       }
 
-      $extensions[$extension['extension']] = [
-        'name'          => $extension['extension'],
+      // Create the category if it doesn't exist
+      if (!isset($extensions[$category])) {
+        $extensions[$category] = [];
+      }
+
+      // Now push the row's information to the array
+      $registrarArray = [
+        'name' => $extension['registrarName'],
         'registerPrice' => $extension['registerPrice'],
-        'renewalPrice'  => $extension['renewalPrice'],
-        'isOnSale'      => (boolean)$extension['isOnSale']
+        'renewalPrice' => $extension['renewalPrice'],
+        'registerUrl' => $extension['registerUrl'],
+        'isOnSale' => $extension['isOnSale']
       ];
+
+      if (isset($extensions[$category][$extension['extensionName']])) {
+        $extensions[$category][$extension['extensionName']]['registrars'][] = $registrarArray;
+      } else {
+        $extensions[$category][$extension['extensionName']] = [
+          'extension' => $extension['extensionName'],
+          'registrars' => [$registrarArray]
+        ];
+      }
     }
 
-    return array_values($extensions);
+    ksort($extensions);
+
+    return $extensions;
   }
 
   function getCheapestExtensions() {
-    $allExtensions = $this->getAllExtensionPricing();
+    $sql = 'SELECT
+              extensions.extension AS extensionName,
+              pricing.registerPrice,
+              pricing.renewalPrice,
+              pricing.isOnSale
+            FROM extension_pricing
+            AS pricing
+            INNER JOIN extensions
+            ON pricing.extensionId = extensions.id
+            INNER JOIN registrars
+            ON pricing.registrarId = registrars.id
+            ORDER BY
+              pricing.registerPrice ASC
+            LIMIT 7';
 
-    return array_slice($allExtensions, 0, 7);
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+    $dbCheapestExtensions = $stmt->fetchAll();
+
+    $cheapestExtensions = [];
+
+    foreach ($dbCheapestExtensions as $extension) {
+      $cheapestExtensions[] = [
+        'name' => $extension['extensionName'],
+        'registerPrice' => $extension['registerPrice'],
+        'renewalPrice' => $extension['renewalPrice'],
+        'isOnSale' => (boolean)$extension['isOnSale']
+      ];
+    }
+
+    return $cheapestExtensions;
   }
 }
