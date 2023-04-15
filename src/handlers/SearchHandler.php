@@ -85,6 +85,18 @@ class SearchHandler {
 
     $results = $this->combineDomainHackResultArrays($results, $genericExtensionResults);
 
+    // Let's end by seeing if the string itself is an extension
+    $extensionInfo = $this->getExtensionInfo('.' . $search);
+
+    // If an extension has been found, add it to the results
+    if (!isset($extensionInfo['error'])) {
+      $results[] = [
+        'extension' => $extensionInfo,
+        'domain' => '',
+        'subdomains' => ''
+      ];
+    }
+
     return $results;
   }
 

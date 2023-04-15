@@ -33,9 +33,13 @@ class DomainHelper {
     // And then substr everything before
     $subdomains = substr($string, 0, $domainPosition);
 
+    // Now just trim them of stuff we don't want
+    $domain = trim($domain, '.-');
+    $subdomains = trim($subdomains, '.-');
+
     return [
       'domain' => $domain,
-      'subdomains' => $subdomains
+      'subdomains' => $subdomains ? $subdomains . '.' : ''
     ];
   }
 
