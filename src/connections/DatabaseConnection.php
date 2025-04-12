@@ -11,17 +11,17 @@ class DatabaseConnection {
     ];
 
     try {
-      $this->connection = new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], $options);
+      $this::$connection = new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], $options);
     } catch (\PDOException $e) {
       throw new \PDOException($e->getMessage(), (int)$e->getCode());
     }
   }
 
   function getConnection() {
-    return $this->connection;
+    return $this::$connection;
   }
 
   function closeConnection() {
-    $this->connection = null;
+    $this::$connection = null;
   }
 }

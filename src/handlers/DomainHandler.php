@@ -10,7 +10,6 @@ class DomainHandler {
       return [
         'success' => true,
         'isDomainAvailable' => $isDomainAvailable,
-        'whoisInfo' => $whoisInfo->text
       ];
     } catch (Exception $e) {
       return [
@@ -18,5 +17,20 @@ class DomainHandler {
         'error' => $e->getMessage()
       ];
     }
+  }
+
+  function getAvailabilityOfDomain($domain) {
+    $nameserversAreSet = checkdnsrr($domain, 'NS');
+
+    // If the NS are set then the domain must be registered, so return false
+    if ($nameserversAreSet) {
+      return [
+        'success' => true,
+        'isDomainAvailable' => false,
+      ];
+    }
+
+    // Otherwise, let's check the whois
+    return $this->getWhoisForDomain($domain);
   }
 }

@@ -3,7 +3,7 @@ class SearchHandler {
   static $db = '';
 
   function __construct($connection) {
-    $this->db = $connection;
+    $this::$db = $connection;
   }
 
   function getSearchResults($search) {
@@ -116,7 +116,7 @@ class SearchHandler {
     $stringSuffix = substr($string, -2);
 
     // Now init the ExtensionHandler
-    $extensionHandler = new ExtensionsHandler($this->db);
+    $extensionHandler = new ExtensionsHandler($this::$db);
 
     // And find extensions ending with those characters
     return $extensionHandler->getExtensionsFromSuffix($stringSuffix);
@@ -124,7 +124,7 @@ class SearchHandler {
 
   function getExtensionInfo($extension) {
     // Init the ExtensionHandler
-    $extensionsHandler = new ExtensionsHandler($this->db);
+    $extensionsHandler = new ExtensionsHandler($this::$db);
 
     // Get the extension info
     $extensionInfo = $extensionsHandler->getExtensionInfo($extension);
@@ -175,7 +175,8 @@ class SearchHandler {
           continue;
         }
 
-        $extensionInfo = $this->getExtensionInfo($extension);
+
+        $extensionInfo = $this->getExtensionInfo($extension, 1);
 
         // If we can't find the extension info, skip it
         if ($extensionInfo['error']) {

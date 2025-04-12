@@ -3,14 +3,14 @@ class RegistrarsHandler {
   static $db = '';
 
   function __construct($connection) {
-    $this->db = $connection;
+    $this::$db = $connection;
   }
 
   function getRegistrarsCount() {
     $sql = 'SELECT COUNT(name) as registrarsCount
             FROM registrars';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $registrarsCount = $stmt->fetchAll();
 
@@ -21,7 +21,7 @@ class RegistrarsHandler {
     $sql = 'SELECT COUNT(DISTINCT(registrarId)) as activeRegistrarsCount
             FROM extension_pricing';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $registrarsCount = $stmt->fetchAll();
 
@@ -39,7 +39,7 @@ class RegistrarsHandler {
             ON pricing.registrarId = registrars.id
             GROUP BY registrarId';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $registrarExtensionInfo = $stmt->fetchAll();
 

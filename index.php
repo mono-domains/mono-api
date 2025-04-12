@@ -14,6 +14,16 @@ require __DIR__ . '/src/helpers/DomainHelper.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+if ($_ENV['SHOW_ERRORS']) {
+  ini_set('display_errors', '1');
+  ini_set('display_startup_errors', '1');
+  error_reporting(E_ALL);
+} else {
+  ini_set('display_errors', '0');
+  ini_set('display_startup_errors', '0');
+  error_reporting(0);
+}
+
 // Set up router
 $router = new \Bramus\Router\Router();
 
@@ -118,7 +128,7 @@ $router->get('/extension/([a-zA-Z0-9\-.]+)', function($extension) {
 $router->get('/availability/([a-zA-Z0-9\-.]+)', function($domain) {
   $domainHandler = new DomainHandler();
 
-  $whoisInfo = $domainHandler->getWhoisForDomain($domain);
+  $whoisInfo = $domainHandler->getAvailabilityOfDomain($domain);
 
   die(json_encode($whoisInfo));
 });

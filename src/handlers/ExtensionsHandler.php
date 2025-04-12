@@ -3,10 +3,14 @@ class ExtensionsHandler {
   static $db = '';
 
   function __construct($connection) {
-    $this->db = $connection;
+    $this::$db = $connection;
   }
 
   function getExtensionInfo($extension) {
+    if (substr($extension, 0, 1) !== '.') {
+      $extension = '.' . $extension;
+    }
+
     $sql = 'SELECT
               registrars.name AS registrarName,
               pricing.registerPrice,
@@ -24,7 +28,7 @@ class ExtensionsHandler {
             ORDER BY
               pricing.registerPrice ASC';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute([':extension' => $extension]);
     $extensionInfo = $stmt->fetchAll();
 
@@ -59,7 +63,7 @@ class ExtensionsHandler {
             FROM extensions
             WHERE SUBSTRING(extension, -2, 2) = :suffix';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute([
       ':suffix' => $suffix
     ]);
@@ -87,7 +91,7 @@ class ExtensionsHandler {
             ORDER BY extension DESC
             LIMIT 1)';
     
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $extensions = $stmt->fetchAll();
 
@@ -100,7 +104,7 @@ class ExtensionsHandler {
     $sql = 'SELECT COUNT(DISTINCT extensionId) as extensionCount
             FROM extension_pricing';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $extensionCount = $stmt->fetchAll();
 
@@ -124,7 +128,7 @@ class ExtensionsHandler {
             ORDER BY
               pricing.registerPrice ASC';
     
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $dbExtensions = $stmt->fetchAll();
 
@@ -185,7 +189,7 @@ class ExtensionsHandler {
               pricing.registerPrice ASC
             LIMIT 7';
 
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this::$db->prepare($sql);
     $stmt->execute();
     $dbCheapestExtensions = $stmt->fetchAll();
 
