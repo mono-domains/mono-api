@@ -47,7 +47,8 @@ class ExtensionsHandler {
 
     foreach ($extensionInfo as $registrar) {
       $outputArray['registrars'][] = [
-        'name'          => $registrar['registrarName'],
+        'extension'     => $extension,
+        'registrar'     => $registrar['registrarName'],
         'registerPrice' => $registrar['registerPrice'],
         'renewalPrice'  => $registrar['renewalPrice'],
         'registerUrl'   => $registrar['registerUrl'],
@@ -151,7 +152,8 @@ class ExtensionsHandler {
 
       // Now push the row's information to the array
       $registrarArray = [
-        'name' => $extension['registrarName'],
+        'extension' => $extension['extensionName'],
+        'registrar' => $extension['registrarName'],
         'registerPrice' => $extension['registerPrice'],
         'renewalPrice' => $extension['renewalPrice'],
         'registerUrl' => $extension['registerUrl'],
@@ -176,6 +178,7 @@ class ExtensionsHandler {
   function getCheapestExtensions() {
     $sql = 'SELECT
               extensions.extension AS extensionName,
+              registrars.name AS registrarName,
               pricing.registerPrice,
               pricing.renewalPrice,
               pricing.isOnSale
@@ -197,7 +200,8 @@ class ExtensionsHandler {
 
     foreach ($dbCheapestExtensions as $extension) {
       $cheapestExtensions[] = [
-        'name' => $extension['extensionName'],
+        'extension' => $extension['extensionName'],
+        'registrar' => $extension['registrarName'],
         'registerPrice' => $extension['registerPrice'],
         'renewalPrice' => $extension['renewalPrice'],
         'isOnSale' => (boolean)$extension['isOnSale']
